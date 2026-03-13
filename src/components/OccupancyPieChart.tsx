@@ -13,19 +13,16 @@ export default function OccupancyPieChart({ data }: { data: SensorData[] }) {
   ];
 
   return (
-    <>
-      <h3>Occupancy Distribution</h3>
-      <div style={{ width: "100%", height: 300 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie data={pieData} dataKey="value" cx="50%" cy="50%" outerRadius={100}>
-              <Cell fill="#4caf50" />
-              <Cell fill="#f44336" />
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-    </>
+    <div style={{ width: "100%", height: 300 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie data={pieData} dataKey="value" cx="50%" cy="50%" outerRadius={100}>
+            <Cell fill="#4caf50" />
+            <Cell fill="#f44336" />
+          </Pie>
+          <Tooltip />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

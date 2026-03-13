@@ -22,18 +22,15 @@ export default function TemperatureLineChart({ data }: { data: SensorData[] }) {
   if (!formatted.length) return <p>No temperature data for this range.</p>;
 
   return (
-    <>
-      <h3>Temperature Over Time</h3>
-      <div style={{ width: "100%", height: 300 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={formatted}>
-            <XAxis dataKey="time" hide={false} />
-            <YAxis />
-            <Tooltip />
-            <Line type="monotone" dataKey="temperature" dot={false} stroke="#ff7300" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    </>
+    <div style={{ width: "100%", height: 300 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={formatted}>
+          <XAxis dataKey="time" hide={false} />
+          <YAxis />
+          <Tooltip />
+          <Line type="monotone" dataKey="temperature" dot={false} stroke="#ff7300" />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

@@ -6,9 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Badge } from "../components/ui/badge";
 import { motion } from "framer-motion";
 import { Thermometer, Home, Clock } from "lucide-react";
+import TemperatureLineChart from "../components/TemperatureLineChart";
+import OccupancyPieChart from "../components/OccupancyPieChart";
 
 export default function LivePage() {
   const [latest, setLatest] = useState<SensorData | null>(null);
+  const [history, setHistory] = useState<SensorData[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [pulseKey, setPulseKey] = useState(0);
   const lastIdRef = useRef<number | null>(null);
@@ -18,10 +21,11 @@ export default function LivePage() {
 
     async function tick() {
       try {
-        const rec = await getRecent(1);
+        const rec = await getRecent(100);
         if (!alive) return;
 
-        const next = rec[0] ?? null;
+        setHistory(rec);
+        const next = rec.length > 0 ? rec[rec.length - 1] : null;
         setLatest(next);
         setError(null);
 
@@ -117,6 +121,25 @@ export default function LivePage() {
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
             Backend reachable: <span className="font-medium text-foreground">{error ? "No" : "Yes"}</span>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Temperature Over Time</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TemperatureLineChart data={history} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Occupancy Distribution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <OccupancyPieChart data={history} />
           </CardContent>
         </Card>
       </div>
