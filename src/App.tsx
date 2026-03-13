@@ -39,7 +39,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
   }, [token]);
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen bg-background">
       <Navbar />
       {children}
     </div>

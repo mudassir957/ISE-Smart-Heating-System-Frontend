@@ -11,7 +11,7 @@ function TabLink({ to, icon, label }: { to: string; icon: React.ReactNode; label
       to={to}
       className={({ isActive }) =>
         [
-          "flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition",
+          "flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition text-foreground",
           isActive ? "bg-primary text-primary-foreground" : "hover:bg-muted",
         ].join(" ")
       }
@@ -34,7 +34,7 @@ export default function Navbar() {
             <Thermometer className="h-5 w-5" />
           </div>
           <div>
-            <div className="text-sm font-semibold leading-4">Smart Heating</div>
+            <div className="text-sm font-semibold leading-4 text-foreground">Smart Heating</div>
             <div className="text-xs text-muted-foreground">Dashboard</div>
           </div>
         </div>
@@ -51,7 +51,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {user && (
             <div className="hidden flex-col items-end md:flex">
-              <div className="text-sm font-medium">{user.email}</div>
+              <div className="text-sm font-medium text-foreground">{user.email}</div>
               <div className="flex items-center gap-2">
                 <Badge variant={user.role === "admin" ? "default" : "secondary"}>{user.role}</Badge>
               </div>

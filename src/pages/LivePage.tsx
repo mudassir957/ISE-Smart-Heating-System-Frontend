@@ -8,13 +8,22 @@ import { motion } from "framer-motion";
 import { Thermometer, Home, Clock } from "lucide-react";
 import TemperatureLineChart from "../components/TemperatureLineChart";
 import OccupancyPieChart from "../components/OccupancyPieChart";
+import { useAuth } from "../auth/AuthContext";
+import { getMyPreferences, type Preferences } from "../api/users";
 
 export default function LivePage() {
+  const { token } = useAuth();
   const [latest, setLatest] = useState<SensorData | null>(null);
   const [history, setHistory] = useState<SensorData[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [pulseKey, setPulseKey] = useState(0);
+  const [prefs, setPrefs] = useState<Preferences | null>(null);
   const lastIdRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!token) return;
+    getMyPreferences(token).then(setPrefs).catch(() => {});
+  }, [token]);
 
   useEffect(() => {
     let alive = true;
@@ -40,12 +49,13 @@ export default function LivePage() {
     }
 
     tick();
-    const id = setInterval(tick, 2000);
+    const interval = prefs?.poll_ms || 2000;
+    const id = setInterval(tick, interval);
     return () => {
       alive = false;
       clearInterval(id);
     };
-  }, []);
+  }, [prefs?.poll_ms]);
 
   const occupied = latest?.occupancy === 1;
 
@@ -70,7 +80,7 @@ export default function LivePage() {
             <Thermometer className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-semibold">
+            <div className="text-3xl font-semibold text-foreground">
               {latest ? `${latest.temperature.toFixed(1)}°C` : "—"}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">Current room temperature</p>
@@ -83,7 +93,7 @@ export default function LivePage() {
             <Home className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="flex items-center justify-between">
-            <div className="text-2xl font-semibold">{latest ? (occupied ? "Occupied" : "Empty") : "—"}</div>
+            <div className="text-2xl font-semibold text-foreground">{latest ? (occupied ? "Occupied" : "Empty") : "—"}</div>
             {latest && <Badge variant={occupied ? "default" : "secondary"}>{occupied ? "1" : "0"}</Badge>}
           </CardContent>
         </Card>
@@ -94,7 +104,7 @@ export default function LivePage() {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">
+            <div className="text-2xl font-semibold text-foreground">
               {latest ? new Date(latest.timestamp).toLocaleTimeString() : "—"}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">

@@ -10,6 +10,8 @@ import OccupancyPieChart from "../components/OccupancyPieChart";
 
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Thermometer, TrendingUp, Users, Database } from "lucide-react";
+import { useAuth } from "../auth/AuthContext";
+import { getMyPreferences, type Preferences } from "../api/users";
 
 type Window = "1h" | "1d" | "7d";
 
@@ -19,12 +21,23 @@ function fmt(n: number | null | undefined, digits = 1) {
 }
 
 export default function HistoryPage() {
+  const { token } = useAuth();
   const [window, setWindow] = useState<Window>("1h");
   const [history, setHistory] = useState<SensorData[]>([]);
   const [summary, setSummary] = useState<SensorSummary | null>(null);
+  const [prefs, setPrefs] = useState<Preferences | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!token) return;
+    getMyPreferences(token).then(setPrefs).catch(() => {});
+  }, [token]);
+
+  useEffect(() => {
+    if (prefs) setWindow(prefs.default_window);
+  }, [prefs]);
 
   useEffect(() => {
     let alive = true;
@@ -84,7 +97,7 @@ export default function HistoryPage() {
                 <Database className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-semibold">{summary?.count ?? "—"}</div>
+                <div className="text-2xl font-semibold text-foreground">{summary?.count ?? "—"}</div>
                 <p className="mt-1 text-xs text-muted-foreground">Records in range</p>
               </CardContent>
             </Card>
@@ -95,7 +108,7 @@ export default function HistoryPage() {
                 <Thermometer className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-semibold">{fmt(summary?.temp_avg)}°C</div>
+                <div className="text-2xl font-semibold text-foreground">{fmt(summary?.temp_avg)}°C</div>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Min {fmt(summary?.temp_min)}°C · Max {fmt(summary?.temp_max)}°C
                 </p>
@@ -108,7 +121,7 @@ export default function HistoryPage() {
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-semibold">{occupancyPct}</div>
+                <div className="text-2xl font-semibold text-foreground">{occupancyPct}</div>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Occupied {summary?.occupied_count ?? "—"} · Empty {summary?.empty_count ?? "—"}
                 </p>
@@ -121,7 +134,7 @@ export default function HistoryPage() {
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-semibold">
+                <div className="text-2xl font-semibold text-foreground">
                   {history.length >= 2
                     ? `${(history[history.length - 1].temperature - history[0].temperature).toFixed(1)}°C`
                     : "—"}
