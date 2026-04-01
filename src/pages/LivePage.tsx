@@ -59,6 +59,16 @@ export default function LivePage() {
 
   const occupied = latest?.occupancy === 1;
 
+  function parseSensorTimestamp(value: string) {
+    // FastAPI may return ISO without timezone, so treat ISO-naive values as UTC
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$/.test(value)) {
+      return new Date(`${value}Z`);
+    }
+    return new Date(value);
+  }
+
+  const latestDate = latest ? parseSensorTimestamp(latest.timestamp) : null;
+
   return (
     <Page title="Live" subtitle="Real-time readings from your virtual sensors">
       {error && (
@@ -105,10 +115,10 @@ export default function LivePage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-semibold text-foreground">
-              {latest ? new Date(latest.timestamp).toLocaleTimeString([], { hour12: false, hour: "2-digit", minute: "2-digit" }) : "—"}
+              {latestDate ? latestDate.toLocaleTimeString([], { hour12: false, hour: "2-digit", minute: "2-digit" }) : "—"}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
-              {latest ? new Date(latest.timestamp).toLocaleDateString() : ""}
+              {latestDate ? latestDate.toLocaleDateString() : ""}
             </p>
           </CardContent>
         </Card>
