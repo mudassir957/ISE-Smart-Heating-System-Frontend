@@ -105,7 +105,7 @@ export default function LivePage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-semibold text-foreground">
-              {latest ? new Date(latest.timestamp).toLocaleTimeString() : "—"}
+              {latest ? new Date(latest.timestamp).toLocaleTimeString([], { hour12: false, hour: "2-digit", minute: "2-digit" }) : "—"}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
               {latest ? new Date(latest.timestamp).toLocaleDateString() : ""}
